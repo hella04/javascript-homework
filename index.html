@@ -9,8 +9,17 @@
     <img src="images.png" class="img" />
     <h2>Add your first todo</h2>
     <p>What do you want to get done today?</p>
+
+    <section id="todo-list"></section>
   </section>
-  <input class="input" type="text" placeholder="E.g. Build a web app" />
-  <input id="todo" type="checkbox" />
+
+  <button onclick="addTodo()">Submit</button>
+  <input
+    class="input"
+    type="text"
+    placeholder="E.g. Build a web app"
+    id="todo-input"
+  />
+
   <script src="main.js"></script>
 </body>

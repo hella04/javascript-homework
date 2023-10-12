@@ -1,40 +1,46 @@
-var todoItems = [];
+let todoArray = [];
 
-// const todoInput = document.getElementsByClassName("input");
-// const addData = document.getElementsByClassName("input");
+// when we load the page, we want to load the todos from local storage
 
-// function addTodo(input) {
-//   var input = document.getElementById("userInput");
-// }
-// addEventListener("keypress", addTodo);
+function addTodo() {
+  const todoInput = document.getElementById("todo-input");
+  const list = document.getElementById("todo-list");
 
-function renderTodo(todo) {
-  localStorage.setItem("todoItems", JSON.stringify(todoItems));
+  // save todo to local storage
 
-  const list = document.querySelector(".js-todo-list");
-  const item = document.querySelector(`[data-key='${todo.id}']`);
+  const todo = {
+    id: Date.now(),
+    value: todoInput.value,
+    isCompleted: false,
+  };
 
-  if (todo.deleted) {
-    item.remove();
-    if (todoItems.length === 0) list.innerHTML = "";
-    return;
-  }
-  const isChecked = todo.checked ? "done" : "";
-  const node = document.createElement("list");
-  node.setAttribute("class", `todo-item ${isChecked}`);
-  node.setAttribute("data-key", todo.id);
-  node.innerHTML = `
-    <input id="${todo.id}" type="checkbox"/>
-    <label for="${todo.id}" class="tick js-tick"></label>
-    <span>${todo.text}</span>
-    <button class="delete-todo js-delete-todo">
-    <svg><use href="#delete-icon"></use></svg>
-    </button>
-  `;
+  /* Create list element */
+  const todoItem = document.createElement("li");
+  todoItem.innerText = todoInput.value;
+  todoItem.dataset.key = todo.id;
 
-  if (item) {
-    list.replaceChild(node, item);
-  } else {
-    list.append(node);
-  }
+  /* Create delete button */
+  const todoDelete = document.createElement("button");
+  todoDelete.innerText = "Delete";
+  todoItem.append(todoDelete);
+
+  /* Add event listener to delete button */
+  todoDelete.addEventListener("click", function () {
+    todoItem.remove();
+  });
+
+  /* Create delete button */
+  const todoComplete = document.createElement("button");
+  todoComplete.innerText = "Complete";
+  todoItem.append(todoComplete);
+
+  /* Add event listener to delete button */
+  todoComplete.addEventListener("click", function () {
+    // todo item isCompleted should be true
+    // mark somehow the todo item as completed
+  });
+
+  todoArray.push(todo);
+
+  list.append(todoItem);
 }
