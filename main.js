@@ -6,8 +6,6 @@ function addTodo() {
   const todoInput = document.getElementById("todo-input");
   const list = document.getElementById("todo-list");
 
-  // save todo to local storage
-
   const todo = {
     id: Date.now(),
     value: todoInput.value,
