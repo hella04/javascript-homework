@@ -1,13 +1,13 @@
 let todoArray = [];
 
-//load the todos from local storage
+// load todos from local storage
 window.addEventListener("load", function () {
   const storedTodoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
 
-  // todoArray stored items
+  // initialize the todoArray with the stored items
   todoArray = storedTodoItems;
 
-  //todo list add stored items
+  // add stored items
   const todoList = document.getElementById("todo-list");
   for (const todo of todoArray) {
     const todoItem = createTodoItem(todo);
@@ -17,6 +17,7 @@ window.addEventListener("load", function () {
 
 function addTodo() {
   const todoInput = document.getElementById("todo-input");
+  const list = document.getElementById("todo-list");
 
   // todo object id
   const todo = {
@@ -26,7 +27,7 @@ function addTodo() {
   };
 
   // save new todo item
-  saveTodo(todo.value);
+  saveTodo(todo);
 
   // create and append todo item to the list
   const todoList = document.getElementById("todo-list");
@@ -37,20 +38,38 @@ function addTodo() {
   todoInput.value = "";
 }
 
-function saveTodo(todoValue) {
+function saveTodo(todo) {
   // check if there is existing data in localStorage
-  let todoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
+  let storedTodoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
 
-  // add new todo item to array
-  todoItems.push(todoValue);
+  // add the new todo object to the array
+  storedTodoItems.push(todo);
 
-  // save the updated array back to localStorage
-  localStorage.setItem("todoItems", JSON.stringify(todoItems));
+  // save updated array back to localStorage
+  localStorage.setItem("todoItems", JSON.stringify(storedTodoItems));
 }
 
 function createTodoItem(todo) {
   const todoItem = document.createElement("li");
   todoItem.classList.add("todo-item");
+
+  // create complete button
+  const todoComplete = document.createElement("button");
+  todoComplete.innerText = "Complete";
+  todoItem.appendChild(todoComplete);
+  todoItem.classList.add("completebttn");
+
+  // event listener for complete button
+
+  todoComplete.addEventListener("click", function () {
+    if (todo.isCompleted === false) {
+      todoItem.classList.add("completed");
+      todo.isCompleted = true;
+    } else {
+      todoItem.classList.remove("completed");
+      todo.isCompleted = false;
+    }
+  });
 
   const todoText = document.createElement("span");
   todoText.innerText = todo.value;
@@ -61,38 +80,26 @@ function createTodoItem(todo) {
   todoDelete.innerText = "Delete";
   todoItem.appendChild(todoDelete);
 
-  // event listener to delete button
+  // event listener for delete button
   todoDelete.addEventListener("click", function () {
     todoItem.remove();
-    deleteTodo(todo.value);
-  });
-
-  // create complete button
-  const todoComplete = document.createElement("button");
-  todoComplete.innerText = "Complete";
-  todoItem.appendChild(todoComplete);
-
-  // event listener to complete button
-  todoComplete.addEventListener("click", function () {
-    todoItem.classList.add("completed");
+    deleteTodo(todo);
   });
 
   return todoItem;
 }
 
 // remove todo item from the array
-function deleteTodo(todoValue) {
-  const index = todoArray.indexOf(todoValue);
+function deleteTodo(todo) {
+  const index = todoArray.findIndex((item) => item.id === todo.id);
   if (index !== -1) {
     todoArray.splice(index, 1);
   }
 
-  // update localStorage to remove deleted item
-  localStorage.setItem("todoItems", JSON.stringify(todoArray));
-
-  const todoList = document.getElementById("todo-list");
-  const todoItem = todoList.querySelector(`[data-value="${todoValue}"]`);
-  if (todoItem) {
-    todoItem.remove();
-  }
+  // update localStorage to remove the deleted item
+  const storedTodoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
+  const updatedStoredTodoItems = storedTodoItems.filter(
+    (item) => item.id !== todo.id
+  );
+  localStorage.setItem("todoItems", JSON.stringify(updatedStoredTodoItems));
 }
