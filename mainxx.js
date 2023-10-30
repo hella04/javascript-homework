@@ -1,11 +1,22 @@
 let todoArray = [];
 
+window.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    addTodo();
+  }
+});
+
 // load todos from local storage
 window.addEventListener("load", function () {
   const storedTodoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
 
   // initialize the todoArray with the stored items
   todoArray = storedTodoItems;
+
+  if (todoArray.length > 0) {
+    const section = document.getElementById("todo-section");
+    section.classList.add("hidden");
+  }
 
   // add stored items
   const todoList = document.getElementById("todo-list");
@@ -36,6 +47,12 @@ function addTodo() {
 
   // clear input field
   todoInput.value = "";
+
+  console.log(todoArray);
+  if (todoArray.length > 0) {
+    const section = document.getElementById("todo-section");
+    section.classList.add("hidden");
+  }
 }
 
 function saveTodo(todo) {
@@ -44,6 +61,7 @@ function saveTodo(todo) {
 
   // add the new todo object to the array
   storedTodoItems.push(todo);
+  todoArray.push(todo);
 
   // save updated array back to localStorage
   localStorage.setItem("todoItems", JSON.stringify(storedTodoItems));
@@ -54,13 +72,13 @@ function createTodoItem(todo) {
   todoItem.classList.add("todo-item");
 
   // create complete button
-  const todoComplete = document.createElement("button");
+  const todoComplete = document.createElement("input");
+  todoComplete.type = "checkbox";
   todoComplete.innerText = "Complete";
   todoItem.appendChild(todoComplete);
   todoItem.classList.add("completebttn");
 
   // event listener for complete button
-
   todoComplete.addEventListener("click", function () {
     if (todo.isCompleted === false) {
       todoItem.classList.add("completed");
@@ -69,11 +87,25 @@ function createTodoItem(todo) {
       todoItem.classList.remove("completed");
       todo.isCompleted = false;
     }
+
+    // update localStorage to update the completed status
+    const storedTodoItems = JSON.parse(localStorage.getItem("todoItems")) || [];
+    const index = storedTodoItems.findIndex((item) => item.id === todo.id);
+    if (index !== -1) {
+      storedTodoItems[index] = todo;
+    }
+
+    localStorage.setItem("todoItems", JSON.stringify(storedTodoItems));
   });
 
   const todoText = document.createElement("span");
   todoText.innerText = todo.value;
   todoItem.appendChild(todoText);
+
+  if (todo.isCompleted === true) {
+    todoItem.classList.add("completed");
+    todoComplete.checked = true;
+  }
 
   // create delete button
   const todoDelete = document.createElement("button");
@@ -102,4 +134,9 @@ function deleteTodo(todo) {
     (item) => item.id !== todo.id
   );
   localStorage.setItem("todoItems", JSON.stringify(updatedStoredTodoItems));
+
+  if (todoArray.length === 0) {
+    const section = document.getElementById("todo-section");
+    section.classList.remove("hidden");
+  }
 }
